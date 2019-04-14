@@ -82,7 +82,7 @@ public class gui_construct {
 		final StackPane headPanel = new StackPane();
 		headPanel.setPadding(new Insets(0 , 0 , 20 , 0 ));
 		
-		final Label head = new Label("Utility to decrypt Thecnicolor RBI firmware files");
+		final Label head = new Label("Utility to decrypt Technicolor RBI firmware files");
 		head.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
 		headPanel.getChildren().add(head);
 		
