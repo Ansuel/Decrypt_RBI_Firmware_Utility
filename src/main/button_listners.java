@@ -1,4 +1,4 @@
-package decrypt_rbi;
+package main;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,14 +13,14 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import decrypt_rbi.gui_construct;
-import decrypt_rbi.gui_inizializer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.RadioButton;
 import javafx.stage.FileChooser;
+import main.gui_construct;
+import main.gui_inizializer;
 
 public class button_listners {
 	

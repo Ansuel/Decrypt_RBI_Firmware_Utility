@@ -1,4 +1,4 @@
-package decrypt_rbi;
+package main;
 
 /*
 0x4 MAGIC VALUE

@@ -1,4 +1,4 @@
-package decrypt_rbi;
+package main;
 
 import java.io.File;
 import java.util.HashMap;
@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
-import decrypt_rbi.Main;
-import decrypt_rbi.button_listners;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -32,6 +30,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import main.Main;
+import main.button_listners;
 
 public class gui_construct {
 	private Scene scene;
@@ -248,7 +248,7 @@ public class gui_construct {
     	
     	final Separator LineSeparator = new Separator();
     	LineSeparator.setOrientation(Orientation.HORIZONTAL);
-    	final Label Version = new Label("Version "+Main.Version);
+    	final Label Version = new Label("Version "+gui_inizializer.Version);
     	Version.setPadding(new Insets(-10, 0, 0, 0));
     	Version.setTextFill(Color.GRAY);
     	

@@ -1,4 +1,4 @@
-package decrypt_rbi;
+package main;
 
 public class string_util {
     public static byte[] toByteArray(String s) {

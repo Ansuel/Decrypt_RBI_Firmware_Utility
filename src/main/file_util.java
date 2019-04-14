@@ -1,4 +1,4 @@
-package decrypt_rbi;
+package main;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

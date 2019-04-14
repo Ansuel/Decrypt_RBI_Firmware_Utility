@@ -1,4 +1,4 @@
-package decrypt_rbi;
+package main;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
