@@ -17,7 +17,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.RadioButton;
 import javafx.stage.FileChooser;
 import main.gui_construct;
 import main.gui_inizializer;
@@ -28,7 +27,8 @@ public class button_listners {
 	
 	private EventHandler<ActionEvent> inputFile;
 	private EventHandler<ActionEvent> decryptFile;
-	private EventHandler<ActionEvent> checkOsckButton;
+	private EventHandler<ActionEvent> checkOsckSelect;
+	private EventHandler<ActionEvent> setManualOsck;
 	
 	button_listners(gui_construct scene) {
 		this.Scene = scene;
@@ -49,13 +49,27 @@ public class button_listners {
 	    	}
 		};
 
-		this.checkOsckButton = new EventHandler<ActionEvent>() {
+		this.checkOsckSelect = new EventHandler<ActionEvent>() {
 			@Override
 	    	public void handle(ActionEvent event) {
 				Scene.setState("IDLE");
-				RadioButton selectedRadioButton = (RadioButton) Scene.OsckGroup.getSelectedToggle();
-				String model = selectedRadioButton.getText();
+				String model = Scene.OsckSelect.getSelectionModel().getSelectedItem();
 				SelectOsckFromName(model);
+				event.consume();
+	    	}
+		};
+		
+		this.setManualOsck = new EventHandler<ActionEvent>() {
+			@Override
+	    	public void handle(ActionEvent event) {
+				Scene.setState("IDLE");
+				if ( Scene.ManualOsckButton.isSelected() ) {
+					Scene.OsckSelect.setDisable(true);
+					SelectOsckFromName("Manual");
+				} else {
+					Scene.OsckSelect.setDisable(false);
+					SelectOsckFromName(Scene.OsckSelect.getSelectionModel().getSelectedItem());
+				}
 				event.consume();
 	    	}
 		};
@@ -64,11 +78,11 @@ public class button_listners {
 			@Override
 	    	public void handle(ActionEvent event) {
 				ByteArrayOutputStream outputStream = Scene.getRbiConstructor().getOutputStream();
-				RadioButton selectedRadioButton = (RadioButton) Scene.OsckGroup.getSelectedToggle();
+				String model = Scene.OsckSelect.getSelectionModel().getSelectedItem();
 				
-				if ( selectedRadioButton != null ) {
+				if ( model != null ) {
 					byte[] osck;
-		    		if ( selectedRadioButton.getText()  == "Manual" ) 
+		    		if ( model  == "Manual" ) 
 		    			osck = string_util.toByteArray(Scene.OsckInput.getText());
 		    		else
 		    			osck = Scene.getOsck();
@@ -133,7 +147,7 @@ public class button_listners {
 		String boardname = Scene.getRbiConstructor().getHeaderTable().get("boardname");
 		if ( osck_table.boardname_map.containsKey(boardname) ) {
 			String model = osck_table.boardname_map.get(boardname);
-			Scene.BoardButton.get(model).setSelected(true);
+			Scene.OsckSelect.getSelectionModel().select(model);
 			SelectOsckFromName(model);
 			Scene.log.appendText("AutoDetected model: "+model+"\n");
 		}
@@ -161,14 +175,18 @@ public class button_listners {
 			Scene.OsckInputPanel.setVisible(true);
 			Scene.OsckManualinfotext.setVisible(true);
 			Scene.OsckInput.setDisable(false);
-			Scene.OsckInput.setText(null);
+			Scene.OsckInput.clear();
 		} else {
-			Scene.OsckManualinfotext.setVisible(false);
-			Scene.OsckInputPanel.setVisible(true);
-			Scene.OsckInput.setDisable(true);
 			String osck = osck_table.osck_table.get(model);
-			Scene.OsckInput.setText(osck);
-			Scene.setOsck(string_util.toByteArray(osck));
+			if ( osck != null ) {
+				Scene.OsckManualinfotext.setVisible(false);
+				Scene.OsckInputPanel.setVisible(true);
+				Scene.OsckInput.setDisable(true);
+				Scene.OsckInput.setText(osck);
+				Scene.setOsck(string_util.toByteArray(osck));
+			} else {
+				Scene.OsckInputPanel.setVisible(false);
+			}
 		}
 	}
 	
@@ -202,7 +220,11 @@ public class button_listners {
 		return decryptFile;
 	}
 	
-	public EventHandler<ActionEvent> getcheckOsckButtonEventHandler() {
-		return checkOsckButton;
+	public EventHandler<ActionEvent> getcheckOsckSelectHandler() {
+		return checkOsckSelect;
+	}
+	
+	public EventHandler<ActionEvent> getManualOsckHandler() {
+		return setManualOsck;
 	}
 }

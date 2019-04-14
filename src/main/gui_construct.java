@@ -1,7 +1,6 @@
 package main;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.UnaryOperator;
@@ -12,6 +11,8 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -53,6 +54,8 @@ public class gui_construct {
 	Button loadFile;
 	
 	TitledPane OsckInputPanel;
+	ComboBox<String> OsckSelect;
+	CheckBox ManualOsckButton;
 	Label OsckManualinfotext;
 	TextField OsckInput;
 	
@@ -133,23 +136,21 @@ public class gui_construct {
     private Node InputOsckPanel() {
     	final HBox InputOsckSubPanel = new HBox();
     	
-    	OsckGroup = new ToggleGroup();
-    	BoardButton = new HashMap<String,RadioButton>();
+    	OsckSelect = new ComboBox<String>();
 
     	Map<String, String> osck_list = osck_table.osck_table;
     	for (Entry<String, String> entry : osck_list.entrySet()) {
-    		RadioButton button = new RadioButton(entry.getKey());
-    		button.setOnAction(Listners.getcheckOsckButtonEventHandler());
-    		button.setToggleGroup(OsckGroup);
-    		button.setPadding(new Insets(0,10,0,0));
-    		BoardButton.put(entry.getKey(),button);
-    		InputOsckSubPanel.getChildren().add(button);
+    		OsckSelect.getItems().add(entry.getKey());
 		}
-    	RadioButton button = new RadioButton("Manual");
-    	button.setOnAction(Listners.getcheckOsckButtonEventHandler());
-		button.setToggleGroup(OsckGroup);
-		button.setPadding(new Insets(0,10,0,0));
-		InputOsckSubPanel.getChildren().add(button);
+    	
+    	OsckSelect.setOnAction(Listners.getcheckOsckSelectHandler());
+    	
+    	ManualOsckButton = new CheckBox("Manual");
+    	ManualOsckButton.setOnAction(Listners.getManualOsckHandler());
+    	ManualOsckButton.setPadding(new Insets(0,0,0,10));
+		
+    	InputOsckSubPanel.getChildren().add(OsckSelect);
+		InputOsckSubPanel.getChildren().add(ManualOsckButton);
 		
 		TitledPane osckRadioPanel = new TitledPane("Model Select", InputOsckSubPanel); 
 		osckRadioPanel.setCollapsible(false);
