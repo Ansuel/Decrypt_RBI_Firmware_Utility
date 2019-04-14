@@ -36,7 +36,7 @@ public class osck_table {
 		boardname_map.put("vbnt-f","TG789vac Xtream");
 		boardname_map.put("vbnt-j","DJN2130");
 		boardname_map.put("vbnt-k","DGA4130");
-		boardname_map.put("vbnt-l","TG799vn-v2");
+		boardname_map.put("vbnt-l","TG789vac v2 HP");
 		boardname_map.put("vbnt-o","DGA4131");
 		boardname_map.put("vbnt-s","DGA4132");
 		boardname_map.put("vbnt-v","DJA0230");
