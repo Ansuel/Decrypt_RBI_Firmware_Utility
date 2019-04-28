@@ -2,7 +2,6 @@ package main;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
@@ -11,16 +10,13 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
@@ -31,12 +27,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import main.Main;
-import main.button_listners;
 
 public class gui_construct {
-	private Scene scene;
-	private byte[] osck;
+	private final Scene scene;
 	private rbi_info rbi_constructor;
 	public static enum State {
 		LOADED,
@@ -55,14 +48,12 @@ public class gui_construct {
 	
 	TitledPane OsckInputPanel;
 	ComboBox<String> OsckSelect;
-	CheckBox ManualOsckButton;
+	Label ModelLabel;
 	Label OsckManualinfotext;
 	TextField OsckInput;
 	
 	HBox HeaderSubPanel;
 	ToggleGroup OsckGroup;
-	
-	Map<String, RadioButton> BoardButton;
 	
 	public gui_construct() {
 		
@@ -136,27 +127,22 @@ public class gui_construct {
     private Node InputOsckPanel() {
     	final HBox InputOsckSubPanel = new HBox();
     	
-    	OsckSelect = new ComboBox<String>();
-
-    	Map<String, String> osck_list = osck_table.osck_table;
-    	for (Entry<String, String> entry : osck_list.entrySet()) {
-    		OsckSelect.getItems().add(entry.getKey());
-		}
-    	
+    	OsckSelect = new ComboBox<>();
+		OsckSelect.getItems().addAll(board.getMap().keySet());
+		OsckSelect.getItems().add(0, "Manual");
     	OsckSelect.setOnAction(Listners.getcheckOsckSelectHandler());
     	
-    	ManualOsckButton = new CheckBox("Manual");
-    	ManualOsckButton.setOnAction(Listners.getManualOsckHandler());
-    	ManualOsckButton.setPadding(new Insets(0,0,0,10));
+		ModelLabel = new Label("Please select");
+    	ModelLabel.setPadding(new Insets(0,0,0,10));
 		
     	InputOsckSubPanel.getChildren().add(OsckSelect);
-		InputOsckSubPanel.getChildren().add(ManualOsckButton);
+		InputOsckSubPanel.getChildren().add(ModelLabel);
 		
-		TitledPane osckRadioPanel = new TitledPane("Model Select", InputOsckSubPanel); 
-		osckRadioPanel.setCollapsible(false);
-		osckRadioPanel.setPadding(new Insets(0,0,10,0));
+		TitledPane osckInputPanel = new TitledPane("Model Select", InputOsckSubPanel); 
+		osckInputPanel.setCollapsible(false);
+		osckInputPanel.setPadding(new Insets(0,0,10,0));
     	
-    	return osckRadioPanel;
+    	return osckInputPanel;
     }
     
     private Node InputManualOsckPanel() {
@@ -166,10 +152,11 @@ public class gui_construct {
 		OsckManualinfotext = new Label("Insert the extracted OSCK key (64 char long)");
 		OsckManualinfotext.setVisible(false);
 		OsckManualinfotext.managedProperty().bind(OsckManualinfotext.visibleProperty());
+        
 		OsckInput = new TextField();
 		
 		Pattern pattern = Pattern.compile(".{0,64}");
-	    TextFormatter<TextFormatter.Change> formatter = new TextFormatter<Change>((UnaryOperator<TextFormatter.Change>) change -> {
+	    TextFormatter<TextFormatter.Change> formatter = new TextFormatter<>((UnaryOperator<TextFormatter.Change>) change -> {
 	        return pattern.matcher(change.getControlNewText()).matches() ? change : null;
 	    });
 		
@@ -271,14 +258,6 @@ public class gui_construct {
     
     public rbi_info getRbiConstructor() {
     	return rbi_constructor;
-    }
-    
-    public void setOsck(byte[] osck) {
-    	this.osck = osck; 
-    }
-    
-    public byte[] getOsck() {
-    	return osck;
     }
     
     public Scene getScene() {

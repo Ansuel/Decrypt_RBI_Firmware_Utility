@@ -24,110 +24,126 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class file_util {
 	
-	public static void processFile(ByteArrayOutputStream outputStream, byte[] osck,gui_construct Scene) throws IOException, DataFormatException, InvalidKeyException,
+	public static void processFile(ByteArrayOutputStream outputStream, byte[] osck, byte[] osik, gui_construct Scene) throws IOException, DataFormatException, InvalidKeyException,
 	NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, 
 	IllegalBlockSizeException, BadPaddingException {
-		ByteArrayInputStream data;
-		
+        
+		ByteArrayInputStream payload;
+        byte[] payloadType;
+        
 		while (true) {
-			data = new ByteArrayInputStream(outputStream.toByteArray());
-			outputStream.reset();
-			byte[] payloadtype = new byte[1];
-			data.read(payloadtype, 0, 1);
+			payload = new ByteArrayInputStream(outputStream.toByteArray());
+            outputStream.reset();
+			payloadType = new byte[1];
+			payload.read(payloadType, 0, 1);
 
-			if ( payloadtype[0] == (byte) 0xB0 ) {
-				Scene.log.appendText("Cleaning file from magic bit...\n");
-				finishProcess(data, outputStream);
+			if ( payloadType[0] == (byte) 0xB0 ) {
+				Scene.log.appendText("Cleaning payload from magic bit...\n");
+				finishProcess(payload, outputStream);
 				break;
-			} else if ( payloadtype[0] == (byte) 0xB4 ) {
-				Scene.log.appendText("Extracting decrypted rbi file...\n");
-				extractRbi(data,outputStream);
-			} else if ( payloadtype[0] == (byte) 0xB8 ) {
-				Scene.log.appendText("Removing signature from tmp file...\n");
-				removeSignature(data,outputStream);
-			} else if ( payloadtype[0] == (byte) 0xB7 ) {
+			} else if ( payloadType[0] == (byte) 0xB4 ) {
+				Scene.log.appendText("Decompressing payload...\n");
+				inflatePayload(payload, outputStream);
+			} else if ( payloadType[0] == (byte) 0xB8 ) {
+                if ( osik != null ) {
+                    Scene.log.appendText("Checking payload signature...\n");
+                    // TODO sigCheck()
+                } else {
+				    Scene.log.appendText("Skipping payload signature check...\n");
+				    unsignPayload(payload, outputStream);
+                }
+			} else if ( payloadType[0] == (byte) 0xB7 ) {
 				Scene.log.appendText("Decrypting rbi firmware...\n");
-				decryptFile(data,outputStream,osck);
+				decryptPayload(payload, outputStream, osck);
 			} else {
 				throw new InvalidKeyException("Can't recognize magic bit! Assume wrong decryption!");
 			}
 		}
 		
-		data.close();
+		payload.close();
 	}
 	
 	public static void saveFile(ByteArrayOutputStream outputStream,File file,gui_construct Scene) throws IOException {
-		FileOutputStream outStream = new FileOutputStream(file);
-		outStream.write(outputStream.toByteArray());
-		outStream.close();
+        try (FileOutputStream outStream = new FileOutputStream(file)) {
+            outStream.write(outputStream.toByteArray());
+        }
 		outputStream.close();
-		Scene.log.appendText("Decrypted file saved here: "+file.getAbsolutePath()+"\n");
-		Scene.log.appendText("You can now use Binwalk to extract the decrypted file or flash it to the mtd flash\n");
+		Scene.log.appendText("Firmware partition file saved here: "+file.getAbsolutePath()+"\n");
+		Scene.log.appendText("You can now use Binwalk to unpack kernel and root filesystem, or directly flash it with mtd write\n");
 	}
 
-	public static void removeSignature(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream) throws IOException {
+	public static void unsignPayload(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream) throws IOException {
 
 		//First byte is already removed by reading the magic bit
 		inputStream.skip( 4 + 1 + 4 + 32);
 		byte[] buffer = new byte[1024];
-		int count = 0;
+		int count;
 		while (inputStream.available() != 0) {
 			count = inputStream.read(buffer);
 			outputStream.write(buffer, 0 , count);
 		}
 	}
 
-	public static void decryptFile(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream,byte[] osck)
+	public static void decryptPayload(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream, byte[] key1)
 			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
 			InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
 
+        //First byte is already removed by reading the magic bit 
+		inputStream.skip(4 + 1);
+        
+        byte[] payloadSize = new byte[4];
+        inputStream.read(payloadSize, 0, 4);
+        BigInteger datalen = new BigInteger(payloadSize);
+        
 		final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
-		byte[] iv = new byte[16];
-		byte[] keydata = new byte[48];
+        IvParameterSpec ivParameterSpec;
+        SecretKeySpec secretKeySpec;
+        
+        byte[] encryptedData, decryptedData;
+        
+		byte[] iv1 = new byte[16];
+		inputStream.read(iv1, 0, 16);
+        
+        ivParameterSpec = new IvParameterSpec(iv1, 0, cipher.getBlockSize());
+		secretKeySpec = new SecretKeySpec(key1, "AES");
+		cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
 
-		//First byte is already removed by reading the magic bit 
-		inputStream.skip(4 + 1 + 4);
+        encryptedData = new byte[48];
+        inputStream.read(encryptedData, 0, 48);
+        decryptedData = cipher.doFinal(encryptedData);
+        
+        byte[] key2 = decryptedData;
+        byte[] iv2 = new byte[16];
+		inputStream.read(iv2, 0, 16);
 
-		inputStream.read(iv, 0, 16);
-		inputStream.read(keydata, 0, 48);
+		ivParameterSpec = new IvParameterSpec(iv2, 0, cipher.getBlockSize());
+		secretKeySpec = new SecretKeySpec(key2, "AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
 
-		IvParameterSpec ivParameterSpec = new IvParameterSpec(iv, 0, cipher.getBlockSize());
-		SecretKeySpec secretSpec = new SecretKeySpec(osck, "AES");
-
-		cipher.init(Cipher.DECRYPT_MODE, secretSpec, ivParameterSpec);
-
-		keydata = cipher.doFinal(keydata);
-		inputStream.read(iv, 0, 16);
-
-		ivParameterSpec = new IvParameterSpec(iv, 0, cipher.getBlockSize());
-		secretSpec = new SecretKeySpec(keydata, "AES");
-
-		// We should investigate this 80 bit skipped
+        // We should investigate this 80 bit skipped
 		// byte skipped = magic bit + keydata + iv + something
 
-		cipher.init(Cipher.DECRYPT_MODE, secretSpec, ivParameterSpec);
-		byte[] buffer = new byte[1024];
-		int count = 0;
-		while (inputStream.available() != 0) {
+		byte[] buffer = new byte[4096];
+		int count;
+		while (inputStream.available() != 0 && datalen.longValue() >= outputStream.size()) {
 			count = inputStream.read(buffer);
-			outputStream.write(buffer, 0 ,count);
+			outputStream.write(buffer, 0, count);
 		}
-
-		byte[] decrypted = cipher.doFinal(outputStream.toByteArray());
+        //encryptedData = outputStream.toByteArray();
+		decryptedData = cipher.doFinal(outputStream.toByteArray());
+        
 		outputStream.reset();
-		outputStream.write(decrypted);
+		outputStream.write(decryptedData);
 	}
 
-	public static void extractRbi(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream) throws IOException, DataFormatException {
+	public static void inflatePayload(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream) throws IOException, DataFormatException {
 		
 		//First byte is already removed by reading the magic bit 
 		inputStream.skip( 4 + 1 + 4);
 		
 		InflaterInputStream inflater = new InflaterInputStream(inputStream, new Inflater());
-		
-		int count = 0;
-		  
+		int count;
 		byte[] buffer = new byte[1024];
 		while ((count = inflater.read(buffer)) != -1) {
 			outputStream.write(buffer,0,count);
@@ -139,7 +155,7 @@ public class file_util {
 		//First byte is already removed by reading the magic bit
 		inputStream.skip( 4 + 1 );
 		byte[] buffer = new byte[1024];
-		int count = 0;
+		int count;
 		while (inputStream.available() != 0) {
 			count = inputStream.read(buffer);
 			outputStream.write(buffer, 0 , count);
@@ -161,24 +177,21 @@ public class file_util {
 		file_stream.seek(0);
 		file_stream.read(globalHeader, 0, offset);
 		
-		header_parser.parse(globalHeader,header_table);
-		
+		header_parser.parse(globalHeader,header_table);		
 	}
 
 	public static void loadFile(File file,ByteArrayOutputStream outputStream,Map<String,String> header_table) throws IOException {
-		
-		RandomAccessFile file_stream = new RandomAccessFile(file, "r");
-		
-		int offset = calcPyloadStart(file_stream);
-
-		readglobalHeader(file_stream,offset,header_table);
-		file_stream.seek(offset);
-		int count = 0;
-		byte[] buffer = new byte[1024];
-		while ( (count = file_stream.read(buffer)) !=-1) {
-			outputStream.write(buffer,0,count);
-		}
-		file_stream.close();
-		
+		outputStream.reset();
+        try (RandomAccessFile file_stream = new RandomAccessFile(file, "r")) {
+            int offset = calcPyloadStart(file_stream);
+            
+            readglobalHeader(file_stream,offset,header_table);
+            file_stream.seek(offset);
+            int count;
+            byte[] buffer = new byte[1024];
+            while ( (count = file_stream.read(buffer)) !=-1) {
+                outputStream.write(buffer, 0, count);
+            }
+        }
 	}
 }

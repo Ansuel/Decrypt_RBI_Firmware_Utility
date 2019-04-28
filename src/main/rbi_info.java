@@ -14,7 +14,7 @@ public class rbi_info {
 	public rbi_info(File file) {
 		this.file = file;
 		this.outputStream = new ByteArrayOutputStream();
-		this.header_table = new LinkedHashMap<String,String>();
+		this.header_table = new LinkedHashMap<>();
 	}
 	
 	public void setHeaderTable(Map<String,String> header_table) {
