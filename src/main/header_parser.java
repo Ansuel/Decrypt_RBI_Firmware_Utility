@@ -28,32 +28,32 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class header_parser {
-	private static Map<String, String> static_header;
+	private static final Map<String, String> STATIC_HEADER;
 	static {
-		static_header = new LinkedHashMap<>();
-		static_header.put("magic", new String(new byte[4]));
-		static_header.put("fim", new String(new byte[2]));
-		static_header.put("fia", new String(new byte[2]));
-		static_header.put("prodid", new String(new byte[12]));
-		static_header.put("varid", new String(new byte[12]));
-		static_header.put("version", new String(new byte[4]));
-		static_header.put("unknown", new String(new byte[4]));
-		static_header.put("data_offset", new String(new byte[4]));
-		static_header.put("data_size", new String(new byte[4]));
+		STATIC_HEADER = new LinkedHashMap<>();
+		STATIC_HEADER.put("magic", new String(new byte[4]));
+		STATIC_HEADER.put("fim", new String(new byte[2]));
+		STATIC_HEADER.put("fia", new String(new byte[2]));
+		STATIC_HEADER.put("prodid", new String(new byte[12]));
+		STATIC_HEADER.put("varid", new String(new byte[12]));
+		STATIC_HEADER.put("version", new String(new byte[4]));
+		STATIC_HEADER.put("unknown", new String(new byte[4]));
+		STATIC_HEADER.put("data_offset", new String(new byte[4]));
+		STATIC_HEADER.put("data_size", new String(new byte[4]));
 	}
-	private static Map<Byte, String> known_dynamic_header;
+	private static final Map<Byte, String> KNOWN_DYNAMIC_HEADER;
 	static {
-		known_dynamic_header = new HashMap<>();
-		known_dynamic_header.put((byte) 0x2, "timestamp");
-		known_dynamic_header.put((byte) 0x8, "boardname");
-		known_dynamic_header.put((byte) 0x9, "prodname");
-		known_dynamic_header.put((byte) 0xa, "varname");
-		known_dynamic_header.put((byte) 0x20, "tagpparserversion");
-		known_dynamic_header.put((byte) 0x81, "flashaddress");
+		KNOWN_DYNAMIC_HEADER = new HashMap<>();
+		KNOWN_DYNAMIC_HEADER.put((byte) 0x2, "timestamp");
+		KNOWN_DYNAMIC_HEADER.put((byte) 0x8, "boardname");
+		KNOWN_DYNAMIC_HEADER.put((byte) 0x9, "prodname");
+		KNOWN_DYNAMIC_HEADER.put((byte) 0xa, "varname");
+		KNOWN_DYNAMIC_HEADER.put((byte) 0x20, "tagpparserversion");
+		KNOWN_DYNAMIC_HEADER.put((byte) 0x81, "flashaddress");
 	}
 	
 	private static String getNameFromId(Byte data) {
-		return known_dynamic_header.get(data);
+		return KNOWN_DYNAMIC_HEADER.get(data);
 	}
 	
 	public static void parse(byte[] header,Map<String,String> header_table) {
@@ -62,20 +62,27 @@ public class header_parser {
 		byte[] buf;
 		byte[] id  = new byte[1];
 		byte[] len  = new byte[1];
-		int data_len = 0;
+		int data_len;
 		
-		header_table.putAll(static_header);
+		header_table.putAll(STATIC_HEADER);
 		
 		for (Map.Entry<String, String> entry : header_table.entrySet()) {
 		    buf = new byte[entry.getValue().length()];
-			data.read(buf,0,entry.getValue().length());
-			if (entry.getKey() == "version") {
-				entry.setValue(new String(buf[0]+"."+buf[1]+"."+buf[2]+"."+buf[3]));
-			} else if (entry.getKey() == "data_size" || entry.getKey() == "data_offset") {
-				entry.setValue(new BigInteger(buf).toString());
-			} else {
-				entry.setValue(new String(buf));
-			}
+			data.read(buf, 0, entry.getValue().length());
+			if (null == entry.getKey()) {
+                entry.setValue(new String(buf));
+            } else switch (entry.getKey()) {
+                case "version":
+                    entry.setValue(String.format("%d.%x.%x.%x", buf[0], buf[1], buf[2], buf[3]));
+                    break;
+                case "data_size":
+                case "data_offset":
+                    entry.setValue(new BigInteger(buf).toString());
+                    break;
+                default:
+                    entry.setValue(new String(buf));
+                    break;
+            }
 		}
 		
 		//Skip unknown data that we don't know what are for.
