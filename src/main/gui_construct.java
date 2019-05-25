@@ -206,7 +206,7 @@ public class gui_construct {
 		HeaderPanel.setCollapsible(false);
 		HeaderPanel.setPadding(new Insets(0,0,0,5));
 		HeaderSubPanel.setPrefWidth(350);
-		HeaderSubPanel.setPrefHeight(400);
+		HeaderSubPanel.setPrefHeight(350);
 		
 		HBox infoPanel = new HBox();
 		
