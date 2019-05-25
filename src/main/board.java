@@ -93,7 +93,7 @@ public class board {
         );
         
         BOARD_SET.add(new board("VBNT-H").setFriendly("TG799vac Xtream")
-            .setOsck("A07ECCFFB0E7AC7979087C2A9978C9AE010DA23B4A57464102552BE6BD9E8855")
+            .setOsck("7EA0FFCCE7B079AC08792A7C7899AEC90D013BA2574A41465502E62B9EBD5588")
         );
         
         BOARD_SET.add(new board("VBNT-J").setFriendly("DJN2130")
