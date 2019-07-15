@@ -120,6 +120,10 @@ public class board {
             .setOsck("7BFFB7EBBE416D38078712EC5AC5DEF6E4E50EE58848D6F2C072DF6E0C6CEFE7")
         );
 
+        BOARD_SET.add(new board("VBNT-Z").setFriendly("TG789Bvac")
+            .setOsck("BA6B79CAACF7A740ACF366AB11DAAA3E48252BD97205AC6D07C558CDDA5ED7CC")
+        );
+
         BOARD_SET.add(new board("VDNT-O").setFriendly("TG799vn v2")
             .setOsck("EFA9268D1455DF20E8F73084E5D67F3D3B91961680E54732178BD7EC5D94AAC3")
         );
