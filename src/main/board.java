@@ -80,6 +80,10 @@ public class board {
             //.setOsik("")
         );
         
+        BOARD_SET.add(new board("VANT-9").setFriendly("TG789Bvac")
+            .setOsck("89BCC09EABE21FA738E62E6D911FA80CAF091233ECCFF88442FAA5D7AF651A30")
+        );
+        
         BOARD_SET.add(new board("VANT-F").setFriendly("TG799vac")
             .setOsck("7FA2FDF4D4DC31BF66F91DDA9A3E8777B7D7D2EC6E8DB1926C0831CA2A279FDB")
         );
