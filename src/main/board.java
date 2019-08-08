@@ -80,7 +80,7 @@ public class board {
             //.setOsik("")
         );
         
-        BOARD_SET.add(new board("VANT-9").setFriendly("TG789Bvac")
+        BOARD_SET.add(new board("VANT-9").setFriendly("DGA0130")
             .setOsck("89BCC09EABE21FA738E62E6D911FA80CAF091233ECCFF88442FAA5D7AF651A30")
         );
         
@@ -124,7 +124,7 @@ public class board {
             .setOsck("7BFFB7EBBE416D38078712EC5AC5DEF6E4E50EE58848D6F2C072DF6E0C6CEFE7")
         );
 
-        BOARD_SET.add(new board("VBNT-Z").setFriendly("TG789Bvac")
+        BOARD_SET.add(new board("VBNT-Z").setFriendly("DNA0130")
             .setOsck("BA6B79CAACF7A740ACF366AB11DAAA3E48252BD97205AC6D07C558CDDA5ED7CC")
         );
 
