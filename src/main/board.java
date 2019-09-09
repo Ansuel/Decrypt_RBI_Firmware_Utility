@@ -88,6 +88,10 @@ public class board {
             .setOsck("7FA2FDF4D4DC31BF66F91DDA9A3E8777B7D7D2EC6E8DB1926C0831CA2A279FDB")
         );
         
+        BOARD_SET.add(new board("VANT-R").setFriendly("TG799vac")
+            .setOsck("395A2C3E2618CF477AA9AD686FB001F86B06FC3475FA7F283589017D70DBA0BE")
+        );
+
         BOARD_SET.add(new board("VANT-Y").setFriendly("TG800vac")
             .setOsck("8E07111F188641948E84506DB65270BD26595AD41327235A53998DB068DC3833")
         );
