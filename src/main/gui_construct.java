@@ -83,6 +83,7 @@ public class gui_construct {
 	TextField OsckInput;
 	
 	HBox HeaderSubPanel;
+	HBox InfoBlockSubPanel;
 	ToggleGroup OsckGroup;
 	
 	public gui_construct() {
@@ -221,16 +222,49 @@ public class gui_construct {
     	HeaderSubPanel.getChildren().add(HeaderValue);
     }
     
+    public void updateInfoBlockSubPanel() {
+    	
+    	Map<String,String> infoblock = rbi_constructor.getInfoBlockTable();
+    	
+    	VBox InfoLegend = new VBox();
+    	VBox InfoValue = new VBox();
+    	
+    	for (Map.Entry<String, String> entry : infoblock.entrySet()) {
+		    InfoLegend.getChildren().add(new Label(entry.getKey()));
+		    InfoValue.getChildren().add(new Label(entry.getValue()));
+		}
+    	
+    	InfoBlockSubPanel.getChildren().clear();
+    	InfoBlockSubPanel.getChildren().add(InfoLegend);
+    	InfoBlockSubPanel.getChildren().add(InfoValue);
+    }
+    
     private Node InfoLogPanel() {
 		
     	HeaderSubPanel = new HBox();
+    	InfoBlockSubPanel = new HBox();
     	
 		log = new TextArea();
 		log.setEditable(false);
 		
+		VBox logInfoPanel = new VBox();
+		
 		TitledPane logPanel = new TitledPane("Log", new ScrollPane(log)); 
 		logPanel.setCollapsible(false);
 		logPanel.setPadding(new Insets(0,5,0,0));
+		
+		ScrollPane InfoBlockScrol = new ScrollPane();
+		TitledPane infoBlockPanel = new TitledPane("Info Block", InfoBlockScrol);
+		infoBlockPanel.setCollapsible(false);
+		infoBlockPanel.setPadding(new Insets(5,5,0,0));
+		
+		InfoBlockScrol.setContent(InfoBlockSubPanel);
+		InfoBlockSubPanel.setPadding(new Insets(5,5,5,5));
+		InfoBlockSubPanel.setPrefHeight(90);
+		InfoBlockScrol.prefWidthProperty().bind(log.widthProperty());
+		
+		logInfoPanel.getChildren().add(logPanel);
+		logInfoPanel.getChildren().add(infoBlockPanel);
 		
 		TitledPane HeaderPanel = new TitledPane("Header Info", HeaderSubPanel); 
 		HeaderPanel.setCollapsible(false);
@@ -240,9 +274,8 @@ public class gui_construct {
 		
 		HBox infoPanel = new HBox();
 		
-		infoPanel.getChildren().add(logPanel);
+		infoPanel.getChildren().add(logInfoPanel);
 		infoPanel.getChildren().add(HeaderPanel);
-		
 		
 		return infoPanel;
 	}
