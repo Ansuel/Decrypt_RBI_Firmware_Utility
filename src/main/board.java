@@ -63,13 +63,7 @@ public class board {
             return false;
         }
         final board other = (board) obj;
-        if (!Objects.equals(this.mnemonic, other.mnemonic)) {
-            return false;
-        }
-        if (!Objects.equals(this.osck, other.osck)) {
-            return false;
-        }
-        return Objects.equals(this.osik, other.osik);
+        return Objects.equals(this.mnemonic, other.mnemonic);
     }
 
     private static final Set<board> BOARD_SET  = new LinkedHashSet<board>();
@@ -137,7 +131,7 @@ public class board {
         );
 
         BOARD_SET.add(new board("VDNT-O").setFriendly("TG799vn v2")
-            .setOsck("EFA9268D1455DF20E8F73084E5D67F3D3B91961680E54732178BD7EC5D94AAC3")
+            .setOsck("7CDC61993A2FAEF64033705515AFE8B152FB4B1AF0B129F7E91C63C5D3FEB699")
         );
 
         BOARD_SET.add(new board("VDNT-W").setFriendly("TG788vn v2")
