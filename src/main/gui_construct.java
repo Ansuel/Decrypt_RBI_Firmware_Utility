@@ -1,3 +1,33 @@
+/*******************************************************************************
+ * Copyright (C) 2019, Christian Marangi
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
 package main;
 
 import java.io.File;
@@ -53,6 +83,7 @@ public class gui_construct {
 	TextField OsckInput;
 	
 	HBox HeaderSubPanel;
+	HBox InfoBlockSubPanel;
 	ToggleGroup OsckGroup;
 	
 	public gui_construct() {
@@ -191,16 +222,49 @@ public class gui_construct {
     	HeaderSubPanel.getChildren().add(HeaderValue);
     }
     
+    public void updateInfoBlockSubPanel() {
+    	
+    	Map<String,String> infoblock = rbi_constructor.getInfoBlockTable();
+    	
+    	VBox InfoLegend = new VBox();
+    	VBox InfoValue = new VBox();
+    	
+    	for (Map.Entry<String, String> entry : infoblock.entrySet()) {
+		    InfoLegend.getChildren().add(new Label(entry.getKey()));
+		    InfoValue.getChildren().add(new Label(entry.getValue()));
+		}
+    	
+    	InfoBlockSubPanel.getChildren().clear();
+    	InfoBlockSubPanel.getChildren().add(InfoLegend);
+    	InfoBlockSubPanel.getChildren().add(InfoValue);
+    }
+    
     private Node InfoLogPanel() {
 		
     	HeaderSubPanel = new HBox();
+    	InfoBlockSubPanel = new HBox();
     	
 		log = new TextArea();
 		log.setEditable(false);
 		
+		VBox logInfoPanel = new VBox();
+		
 		TitledPane logPanel = new TitledPane("Log", new ScrollPane(log)); 
 		logPanel.setCollapsible(false);
 		logPanel.setPadding(new Insets(0,5,0,0));
+		
+		ScrollPane InfoBlockScrol = new ScrollPane();
+		TitledPane infoBlockPanel = new TitledPane("Info Block", InfoBlockScrol);
+		infoBlockPanel.setCollapsible(false);
+		infoBlockPanel.setPadding(new Insets(5,5,0,0));
+		
+		InfoBlockScrol.setContent(InfoBlockSubPanel);
+		InfoBlockSubPanel.setPadding(new Insets(5,5,5,5));
+		InfoBlockSubPanel.setPrefHeight(90);
+		InfoBlockScrol.prefWidthProperty().bind(log.widthProperty());
+		
+		logInfoPanel.getChildren().add(logPanel);
+		logInfoPanel.getChildren().add(infoBlockPanel);
 		
 		TitledPane HeaderPanel = new TitledPane("Header Info", HeaderSubPanel); 
 		HeaderPanel.setCollapsible(false);
@@ -210,9 +274,8 @@ public class gui_construct {
 		
 		HBox infoPanel = new HBox();
 		
-		infoPanel.getChildren().add(logPanel);
+		infoPanel.getChildren().add(logInfoPanel);
 		infoPanel.getChildren().add(HeaderPanel);
-		
 		
 		return infoPanel;
 	}

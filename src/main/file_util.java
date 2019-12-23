@@ -1,3 +1,33 @@
+/*******************************************************************************
+ * Copyright (C) 2019, Christian Marangi
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
 package main;
 
 import java.io.ByteArrayInputStream;
@@ -10,6 +40,7 @@ import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -63,6 +94,115 @@ public class file_util {
 		payload.close();
 	}
 	
+	private static void consumeInfoBlock(RandomAccessFile stream, int len, Map<String,String> infoblock_table) throws IOException {
+		int read,block_len;
+		byte[] block = new byte[4];
+		int data_convert;
+		String tag, res;
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		
+		while(len > 0) {
+			read = stream.read(block, 0, 4);
+			block_len = new BigInteger(block).intValue();
+			len -= block_len;
+			block_len -= read;
+			
+			// TAG NAME
+			read = stream.read(block, 0, 4);
+			block_len -= read;
+			tag = new String(block).trim();
+			
+			// DATA
+			while(block_len > 0) {
+				read = stream.read(block, 0, 4);
+				block_len -= read;
+				data.write(block);
+			}
+			
+			res = data.toString();
+			if (data.size() == 4) {
+				data_convert = new BigInteger(block).intValue();
+				if (data_convert == 1 || data_convert == 0)
+					res = data_convert == 1 ? "true" : "false";
+			}
+			
+			infoblock_table.put(tag,res);
+			
+			data.reset();
+		}
+		
+		data.close();
+	}
+	
+	private static void detectSignature(RandomAccessFile stream, Map<String,String> infoblock_table) throws IOException {
+		byte[] block = new byte[4];
+		byte[] empty_block = {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		
+		int read,block_len;
+		String tag, res;
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		
+		read = stream.read(block, 0, 4);
+		if ( Arrays.equals(block, empty_block) )
+			return;
+		
+		block_len = new BigInteger(block).intValue();
+		block_len -= read;
+		
+		// TAG NAME
+		read = stream.read(block, 0, 4);
+		block_len -= read;
+		tag = new String(block).trim();
+		
+		// DATA
+		while(block_len > 0) {
+			read = stream.read(block, 0, 4);
+			block_len -= read;
+			data.write(block);
+		}
+		
+		res = string_util.bytesToHexString(data.toByteArray());
+		
+		infoblock_table.put(tag,res);
+		
+		data.close();
+		
+	}
+	
+	public static void detectInfoBlockOffset(File file, gui_construct Scene) throws IOException {
+		
+		RandomAccessFile file_stream = new RandomAccessFile(file, "r");
+		
+		Map<String,String> infoblock_table = Scene.getRbiConstructor().getInfoBlockTable();
+		
+		//First 16 byte are unknown data... 
+		//We know that the first one is always FF FF FF FF
+		// The last 4 block is the info block offset
+		byte[] block = new byte[4];
+		int offset,len;
+		
+		// Skip first 3 blocks (11 byte)
+		file_stream.seek(12);
+		// Read info block offset (last block)
+		file_stream.read(block, 0, 4);
+		
+		
+		offset = new BigInteger(block).intValue();
+		if (offset > 0) {
+			Scene.log.appendText("Detected InfoBlock at offset: "+offset+"\n");
+			file_stream.seek(offset);
+			file_stream.read(block, 0, 4);
+			len = new BigInteger(block).intValue();
+			Scene.log.appendText("Detected InfoBlock of size: "+len+"\n");
+			
+			consumeInfoBlock(file_stream, len - 4, infoblock_table);
+			detectSignature(file_stream, infoblock_table);
+			Scene.updateInfoBlockSubPanel();
+		}
+		
+		file_stream.close();
+	}
+	
 	public static void saveFile(ByteArrayOutputStream outputStream,File file,gui_construct Scene) throws IOException {
         try (FileOutputStream outStream = new FileOutputStream(file)) {
             outStream.write(outputStream.toByteArray());
@@ -70,6 +210,8 @@ public class file_util {
 		outputStream.close();
 		Scene.log.appendText("Firmware partition file saved here: "+file.getAbsolutePath()+"\n");
 		Scene.log.appendText("You can now use Binwalk to unpack kernel and root filesystem, or directly flash it with mtd write\n");
+		
+		detectInfoBlockOffset(file,Scene);
 	}
 
 	public static void unsignPayload(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream) throws IOException {
@@ -154,6 +296,7 @@ public class file_util {
 	public static void finishProcess(ByteArrayInputStream inputStream, ByteArrayOutputStream outputStream) throws IOException {
 		//First byte is already removed by reading the magic bit
 		inputStream.skip( 4 + 1 );
+		
 		byte[] buffer = new byte[1024];
 		int count;
 		while (inputStream.available() != 0) {
