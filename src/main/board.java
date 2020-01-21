@@ -126,6 +126,10 @@ public class board {
             .setOsck("8E07111F188641948E84506DB65270BD26595AD41327235A53998DB068DC3833")
         );
   
+        BOARD_SET.add(new board("VBNT-1").setFriendly("TG789vac v3")
+            .setOsck("C61669DB317E14BB28F180E8B2B2F78ED4F654DE4D2E53069C87B55CED840A16")
+        );
+        
         BOARD_SET.add(new board("VBNT-F").setFriendly("TG789vac Xtream")
             .setOsck("FCD9BE1D6D8EA65968E77A89B8AFCA98A1467FEEE87A87BD276C91DD94D41D59")
         );
@@ -167,7 +171,7 @@ public class board {
         );
 
         BOARD_SET.add(new board("VDNT-O").setFriendly("TG799vn v2")
-            .setOsck("EFA9268D1455DF20E8F73084E5D67F3D3B91961680E54732178BD7EC5D94AAC3")
+            .setOsck("7CDC61993A2FAEF64033705515AFE8B152FB4B1AF0B129F7E91C63C5D3FEB699")
         );
 
         BOARD_SET.add(new board("VDNT-W").setFriendly("TG788vn v2")
