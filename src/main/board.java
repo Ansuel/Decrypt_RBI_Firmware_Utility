@@ -105,6 +105,10 @@ public class board {
     private static final Set<board> BOARD_SET  = new LinkedHashSet<board>();
     static {
 
+        BOARD_SET.add(new board("DANT-7").setFriendly("TG582n v2")
+            .setOsck("A568CBE57060A8F6E5ECA4E5C8CB7CEB09FCE0A0D12020F4B258404B04927053")
+        );
+        
         BOARD_SET.add(new board("VANT-6").setFriendly("TG789vac v2")
             .setOsck("546259AFD4E85AA6FFCE358CE0A93452E25A848138A67C142E42FEC79F4F3784")
             //.setOsik("")
