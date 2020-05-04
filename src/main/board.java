@@ -179,6 +179,10 @@ public class board {
             //.setOsik("")
         );
 
+        BOARD_SET.add(new board("VANT-2").setFriendly("TG588v v2")
+            .setOsck("B0E88249B150C934AC2BA35E7A7C712B3244833ED8DA10ABAB5DAA91AE9F455F")
+        );
+
     }
 
     private static final Map<String, board> BOARD_MAP = new HashMap<String, board>();
