@@ -194,6 +194,9 @@ public class board {
         BOARD_SET.add(new board("VANT-2").setFriendly("TG588v v2")
             .setOsck("B0E88249B150C934AC2BA35E7A7C712B3244833ED8DA10ABAB5DAA91AE9F455F")
         );
+        
+        BOARD_SET.add(new board("VCNT-3").setFriendly("DGA4331")
+            .setOsck("AFE6A928EFD1D5824CCA03CF6F9CD7796FCBE9A746AA7120792B666FC2C3EBB6")
 
     }
 
