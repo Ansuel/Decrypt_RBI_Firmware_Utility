@@ -197,6 +197,7 @@ public class board {
         
         BOARD_SET.add(new board("VCNT-3").setFriendly("DGA4331")
             .setOsck("AFE6A928EFD1D5824CCA03CF6F9CD7796FCBE9A746AA7120792B666FC2C3EBB6")
+        );
 
     }
 
