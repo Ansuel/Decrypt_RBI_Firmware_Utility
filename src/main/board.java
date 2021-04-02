@@ -105,6 +105,14 @@ public class board {
     private static final Set<board> BOARD_SET  = new LinkedHashSet<board>();
     static {
 
+        BOARD_SET.add(new board("DANT-7").setFriendly("TG582n v2")
+            .setOsck("A568CBE57060A8F6E5ECA4E5C8CB7CEB09FCE0A0D12020F4B258404B04927053")
+        );
+        
+        BOARD_SET.add(new board("GANT-1").setFriendly("TG389ac")
+            .setOsck("0373853314B486E335E464B3872E56396634DFD5B6DB9BD03A3DFADE0E37146D")
+        );
+        
         BOARD_SET.add(new board("VANT-6").setFriendly("TG789vac v2")
             .setOsck("546259AFD4E85AA6FFCE358CE0A93452E25A848138A67C142E42FEC79F4F3784")
             //.setOsik("")
@@ -120,6 +128,10 @@ public class board {
         
         BOARD_SET.add(new board("VANT-R").setFriendly("TG799vac")
             .setOsck("395A2C3E2618CF477AA9AD686FB001F86B06FC3475FA7F283589017D70DBA0BE")
+        );
+
+        BOARD_SET.add(new board("VANT-W").setFriendly("TG799vac Xtream")
+            .setOsck("4463C4C33FE788B3CD2BD408706BDF07799D4873A7D50D65DB205CF65E34F87E")
         );
 
         BOARD_SET.add(new board("VANT-Y").setFriendly("TG800vac")
@@ -177,6 +189,14 @@ public class board {
         BOARD_SET.add(new board("VDNT-W").setFriendly("TG788vn v2")
             .setOsck("AA7220BC88329ACF74A042B4D45B07B165615B10916CF40B0BCC8608BE9E1D60")
             //.setOsik("")
+        );
+
+        BOARD_SET.add(new board("VANT-2").setFriendly("TG588v v2")
+            .setOsck("B0E88249B150C934AC2BA35E7A7C712B3244833ED8DA10ABAB5DAA91AE9F455F")
+        );
+        
+        BOARD_SET.add(new board("VCNT-3").setFriendly("DGA4331")
+            .setOsck("AFE6A928EFD1D5824CCA03CF6F9CD7796FCBE9A746AA7120792B666FC2C3EBB6")
         );
 
     }
