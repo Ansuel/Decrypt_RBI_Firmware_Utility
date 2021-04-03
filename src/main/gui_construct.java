@@ -133,7 +133,7 @@ public class gui_construct {
         halfRowsSpace.setPercentHeight(50);
         RowConstraints fillRowsSpace = new RowConstraints();
         fillRowsSpace.setVgrow(Priority.ALWAYS);
-        
+
         GridPane content = new GridPane();
         content.getColumnConstraints().addAll(halfColumnsSpace, halfColumnsSpace);
         content.getRowConstraints().addAll(defaultRowSpace, defaultRowSpace, defaultRowSpace, fillRowsSpace);
@@ -171,7 +171,6 @@ public class gui_construct {
 
         TitledPane filePanel = new TitledPane("RBI firmware File", fileSubPanel);
         filePanel.setCollapsible(false);
-        //filePanel.setPadding(new Insets(0,0,10,0));
 
         return filePanel;
     }
@@ -268,7 +267,6 @@ public class gui_construct {
 
         InfoBlockSubPanel = new GridPane();
         InfoBlockSubPanel.getColumnConstraints().addAll(defaultColSpace, fillColumnsSpace);
-        //InfoBlockSubPanel.setPrefHeight(90);
 
         log = new TextArea();
         log.setEditable(false);
@@ -308,12 +306,10 @@ public class gui_construct {
     private Node Separator() {
 
         final HBox SeparatorPanel = new HBox();
-        //SeparatorPanel.setPadding(new Insets(20, 0, 10, 0));
 
         final Separator LineSeparator = new Separator();
         LineSeparator.setOrientation(Orientation.HORIZONTAL);
         final Label Version = new Label("Version " + gui_inizializer.Version);
-        //Version.setPadding(new Insets(-10, 0, 0, 0));
         Version.setTextFill(Color.GRAY);
 
         SeparatorPanel.getChildren().add(LineSeparator);

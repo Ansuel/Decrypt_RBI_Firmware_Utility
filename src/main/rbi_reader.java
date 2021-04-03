@@ -100,20 +100,12 @@ public class rbi_reader {
             NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException,
             IllegalBlockSizeException, BadPaddingException {
 
-        //ByteArrayInputStream payload;
         byte[] payloadType = new byte[1];
 
         input_file_stream.seek(payloadOffset);
         InputStream inputStream = new FileInputStream(input_file_stream.getFD());
 
-        //int count;
-        //byte[] buffer = new byte[1024];
-        //while ((count = file_stream.read(buffer)) != -1) {
-        //    outputStream.write(buffer, 0, count);
-        //}
         while (true) {
-            //payload = new ByteArrayInputStream(outputStream.toByteArray());
-            //outputStream.reset();
             inputStream.read(payloadType, 0, 1);
 
             if (payloadType[0] == (byte) 0xB0) {
@@ -126,10 +118,10 @@ public class rbi_reader {
             } else if (payloadType[0] == (byte) 0xB8) {
                 //if (osik.length != 2) {
                 //    Scene.log.appendText("Checking payload signature...\n");
-                    // TODO sigCheck()
+                // TODO sigCheck()
                 //} else {
-                    Scene.log.appendText("Skipping payload signature check...\n");
-                    inputStream = unsignPayload(inputStream);
+                Scene.log.appendText("Skipping payload signature check...\n");
+                inputStream = unsignPayload(inputStream);
                 //}
             } else if (payloadType[0] == (byte) 0xB7) {
                 Scene.log.appendText("Decrypting rbi firmware...\n");
@@ -158,7 +150,6 @@ public class rbi_reader {
 
         byte[] payloadSize = new byte[4];
         inputStream.read(payloadSize, 0, 4);
-        //BigInteger datalen = new BigInteger(payloadSize);
 
         final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
@@ -214,7 +205,7 @@ public class rbi_reader {
     }
 
     public void detectInfoBlockOffset(gui_construct Scene) throws IOException {
-        
+
         Map<String, String> infoblock_table = Scene.getRbiInfo().getInfoBlockTable();
 
         //First 16 byte are unknown data... 
@@ -243,7 +234,7 @@ public class rbi_reader {
 
         output_file_stream.close();
     }
-    
+
     private void consumeInfoBlock(RandomAccessFile stream, int len, Map<String, String> infoblock_table) throws IOException {
         int read, block_len;
         byte[] block = new byte[4];

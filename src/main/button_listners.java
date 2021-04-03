@@ -30,13 +30,11 @@
  ***************************************************************************** */
 package main;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
@@ -92,8 +90,6 @@ public class button_listners {
             String model = Scene.BoardSelect.getSelectionModel().getSelectedItem();
 
             if (model != null) {
-                //LoadFile(Scene.getRbiConstructor().getFile());
-
                 if (Scene.getState() == gui_construct.State.LOADED) {
                     if (!Scene.OsKeysInput.getEditor().getText().equals("")) {
                         Scene.OsKeysInput.getItems().add(new os_key_couple("FFFF", Scene.OsKeysInput.getEditor().getText()));
@@ -137,7 +133,7 @@ public class button_listners {
         Scene.log.setText(null);
         Scene.FileInputText.setText(file.toString());
         Scene.newRbiInfo(file).getReader().openFile();
-        
+
         Scene.log.appendText("BLI file opened\n");
 
         Scene.updateHeaderSubPanel();
