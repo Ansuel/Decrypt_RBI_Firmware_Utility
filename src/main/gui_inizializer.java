@@ -34,10 +34,10 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
-import main.gui_construct;
-import main.gui_inizializer;
 
 public class gui_inizializer extends Application {
 
@@ -54,12 +54,19 @@ public class gui_inizializer extends Application {
     
     private void initUI(Stage stage) {
     	final String titolo = "Technicolor Rbi Frimware decrypt utiliy";
-    	stage.getIcons().add(new Image(Main.class.getResourceAsStream("/icon.png")));
-    	
-    	stage.setMinWidth(800);
-    	stage.setMinHeight(880);
         stage.setTitle(titolo);
-        stage.setScene(new gui_construct().getScene());
+    	stage.getIcons().add(new Image(Main.class.getResourceAsStream("/icon.png")));
+    	stage.setScene(new gui_construct().getScene());
+        
+    	//stage.setMinWidth(800);
+    	//stage.setMinHeight(880);
+
+        //set Stage boundaries to visible bounds of the main screen
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        //stage.setX(primaryScreenBounds.getMinX());
+        //stage.setY(primaryScreenBounds.getMinY());
+        stage.setMaxWidth(primaryScreenBounds.getWidth());
+        stage.setMaxHeight(primaryScreenBounds.getHeight());
         stage.show();
     }
     
