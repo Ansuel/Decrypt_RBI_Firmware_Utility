@@ -37,38 +37,22 @@ import java.util.Map;
 
 public class rbi_info {
 	
-	File file;
-	ByteArrayOutputStream outputStream;
-	Map<String,String> header_table;
-	Map<String,String> infoblock_table;
+	private final File file;
+    private final rbi_reader reader;
+	private final Map<String,String> header_table;
+	private final Map<String,String> infoblock_table;
 	
 	public rbi_info(File file) {
 		this.file = file;
-		this.outputStream = new ByteArrayOutputStream();
 		this.header_table = new LinkedHashMap<>();
 		this.infoblock_table = new LinkedHashMap<>();
-	}
-	
-	public void setHeaderTable(Map<String,String> header_table) {
-		this.header_table = header_table;
-	}
-	
-	public void setInfoBlockTable(Map<String,String> infoblock_table) {
-		this.infoblock_table = infoblock_table;
-	}
-	
-	public void RegenerateOutputStream() {
-		this.outputStream = new ByteArrayOutputStream();
+        this.reader = new rbi_reader(this);
 	}
 	
 	public File getFile() {
 		return file;
 	}
-	
-	public ByteArrayOutputStream getOutputStream() {
-		return outputStream;
-	}
-	
+    
 	public Map<String,String> getHeaderTable() {
 		return header_table;
 	}
@@ -76,4 +60,8 @@ public class rbi_info {
 	public Map<String,String> getInfoBlockTable() {
 		return infoblock_table;
 	}
+    
+    public rbi_reader getReader() {
+        return this.reader;
+    }
 }
