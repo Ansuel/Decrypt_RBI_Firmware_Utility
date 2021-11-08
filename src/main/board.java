@@ -212,6 +212,10 @@ public class board {
         BOARD_SET.add(new board("VDNT-W").setFriendly("TG788vn v2")
                 .addOsKeys("AA7220BC88329ACF74A042B4D45B07B165615B10916CF40B0BCC8608BE9E1D60")
         );
+        
+        BOARD_SET.add(new board("GCNT-N").setFriendly("OWA0131")
+                .addOsKeys("C441705BCE539C130016E8F97B6A95E627B948760A4A3E5F1CC3F352392B389A")
+        );
     }
 
     private static final Map<String, board> BOARD_MAP = new HashMap<String, board>();
